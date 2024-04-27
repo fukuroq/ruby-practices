@@ -2,9 +2,9 @@ require 'optparse'
 require "date"
 
 # 日付を表示する部分の列数
-NumberOfColumnsForDaySection = 7
+NUMBER_OF_COLUMNS_FOR_DAY_SECTION = 7
 # 日付を表示する部分の行数
-NumberOfRowsForDaySection = 6
+NUMBER_OF_ROWS_FOR_DAY_SECTION = 6
 
 # コマンドライン引数を取得する
 options = ARGV.getopts('y:m:')
@@ -26,9 +26,9 @@ end
 # 日付の配列の先頭にスペースを挿入する
 day_section_texts = Array.new(first_day_of_month.wday, "  ") + day_section_texts
 # 日付の配列を日付を表示する部分の列数で区切る
-day_section_texts = day_section_texts.each_slice(NumberOfColumnsForDaySection).to_a
+day_section_texts = day_section_texts.each_slice(NUMBER_OF_COLUMNS_FOR_DAY_SECTION).to_a
 
 # カレンダーを表示する
 puts "      #{month}月 #{year}"
 puts "日 月 火 水 木 金 土"
-NumberOfRowsForDaySection.times { |i| puts day_section_texts[i]&.join(" ") || "\n" }
+NUMBER_OF_ROWS_FOR_DAY_SECTION.times { |i| puts day_section_texts[i]&.join(" ") || "\n" }
