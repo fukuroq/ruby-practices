@@ -12,10 +12,7 @@ end
 
 def calcurate_column_width(file_names)
   max_length_of_file_name = file_names.max_by(&:length).length
-  # FreeBSD版lsコマンドで列の幅を求める際に行われている下記のビット演算を参考に実装。
-  # colwidth = (colwidth + tabwidth) & ~(tabwidth - 1)
-  # 例: ファイル名の最大長が17、タブの文字数が8の場合、25(0001 1001)と7を論理反転した値(1111 1000)の論理積である24(0011 1000)が求まる。
-  (max_length_of_file_name + TAB_WIDTH) & ~(TAB_WIDTH - 1)
+  TAB_WIDTH * (max_length_of_file_name / TAB_WIDTH + 1)
 end
 
 def output_file_names(file_names, number_of_rows, column_width)
