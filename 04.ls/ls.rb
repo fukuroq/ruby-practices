@@ -7,7 +7,7 @@ TAB_WIDTH = 8 # ターミナルのデフォルトのタブの文字数
 
 def main
   options = ARGV.getopts('a')
-  file_names = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+  file_names = Dir.glob('*', options['a'] ? File::FNM_DOTMATCH : 0)
   number_of_rows = file_names.length.ceildiv(MAX_NUMBER_OF_COLUMNS)
   column_width = calcurate_column_width(file_names)
   output_file_names(file_names, number_of_rows, column_width)
