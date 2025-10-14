@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'etc'
 
 MAX_NUMBER_OF_COLUMNS = 3
 TAB_WIDTH = 8 # ターミナルのデフォルトのタブの文字数
@@ -54,7 +55,10 @@ def generate_long_format(file_names)
     long_format_file_names << {
       block_size: file_status.blocks,
       file_type: FILE_TYPES[file_status.ftype],
-      permission: generate_permission(file_status)
+      permission: generate_permission(file_status),
+      hard_link: file_status.nlink,
+      owner_name: Etc.getpwuid(file_status.uid).name,
+      group_name: Etc.getgrgid(file_status.gid).name
     }
   end
   long_format_file_names
