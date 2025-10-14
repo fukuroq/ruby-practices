@@ -4,6 +4,33 @@ require 'optparse'
 
 MAX_NUMBER_OF_COLUMNS = 3
 TAB_WIDTH = 8 # ターミナルのデフォルトのタブの文字数
+OWNER_DIGIT = 3
+GROUP_DIGIT = 4
+OTHER_DIGIT = 5
+SET_USER_ID_DIGIT = 2
+SET_GROUP_ID_DIGIT = 5
+STICKY_BIT_DIGIT = 8
+
+FILE_TYPES = {
+  'file' => '-',
+  'directory' => 'd',
+  'characterSpecial' => 'c',
+  'blockSpecial' => 'b',
+  'fifo' => 'p',
+  'link' => 'l',
+  'socket' => 's'
+}
+
+PERMISSIONS = {
+  '0' => '---',
+  '1' => '--x',
+  '2' => '-w-',
+  '3' => '-wx',
+  '4' => 'r--',
+  '5' => 'r-x',
+  '6' => 'rw-',
+  '7' => 'rwx'
+}
 
 def main
   options = ARGV.getopts('arl')
@@ -25,14 +52,43 @@ def generate_long_format(file_names)
   file_names.each do |file_name|
     file_status = File::Stat.new(file_name)
     long_format_file_names << {
-      block_size: file_status.blocks
+      block_size: file_status.blocks,
+      file_type: FILE_TYPES[file_status.ftype],
+      permission: generate_permission(file_status)
     }
   end
   long_format_file_names
 end
 
+def generate_permission(file_status)
+  file_mode = '%06o' % file_status.mode
+  permission = ''
+  [OWNER_DIGIT, GROUP_DIGIT, OTHER_DIGIT].each do |digit|
+    permission += PERMISSIONS[file_mode[digit]]
+  end
+  convert_permission(permission, file_status)
+end
+
+def convert_permission(permission, file_status)
+  case
+  when file_status.setuid?
+    permission[SET_USER_ID_DIGIT] = permission[SET_USER_ID_DIGIT] == "x" ? "s" : "S"
+  when file_status.setgid?
+    permission[SET_GROUP_ID_DIGIT] = permission[SET_GROUP_ID_DIGIT] == "x" ? "s" : "S"
+  when file_status.sticky?
+    permission[STICKY_BIT_DIGIT] = permission[STICKY_BIT_DIGIT] == "x" ? "t" : "T"
+  end
+  permission
+end
+
 def output_long_format(long_format_file_names, total_block_size)
   puts "total: #{total_block_size}"
+  long_format_file_names.each do |long_format_file_name|
+    long_format_file_name.reject { |key| key == :block_size }.each do |key, value|
+      print value
+    end
+  end
+  puts
 end
 
 def calcurate_column_width(file_names)
