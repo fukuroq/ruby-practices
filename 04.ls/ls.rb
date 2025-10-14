@@ -58,7 +58,10 @@ def generate_long_format(file_names)
       permission: generate_permission(file_status),
       hard_link: file_status.nlink,
       owner_name: Etc.getpwuid(file_status.uid).name,
-      group_name: Etc.getgrgid(file_status.gid).name
+      group_name: Etc.getgrgid(file_status.gid).name,
+      bytesize: file_status.size,
+      timestamp: generate_timestamp(file_status),
+      file_name: file_name
     }
   end
   long_format_file_names
@@ -83,6 +86,11 @@ def convert_permission(permission, file_status)
     permission[STICKY_BIT_DIGIT] = permission[STICKY_BIT_DIGIT] == "x" ? "t" : "T"
   end
   permission
+end
+
+def generate_timestamp(file_status)
+  modify_time = file_status.mtime
+  Time.now.year > modify_time.year ? modify_time.strftime("%_m %_d %_5Y") : modify_time.strftime("%_m %_d %H:%M")
 end
 
 def output_long_format(long_format_file_names, total_block_size)
