@@ -23,7 +23,7 @@ FILE_TYPES = {
   'fifo' => 'p',
   'link' => 'l',
   'socket' => 's'
-}
+}.freeze
 
 PERMISSIONS = {
   '0' => '---',
@@ -34,7 +34,7 @@ PERMISSIONS = {
   '5' => 'r-x',
   '6' => 'rw-',
   '7' => 'rwx'
-}
+}.freeze
 
 def main
   options = ARGV.getopts('arl')
@@ -65,14 +65,14 @@ def generate_long_format(file_names)
       group_name: Etc.getgrgid(file_status.gid).name,
       bytesize: file_status.size,
       timestamp: generate_timestamp(file_status),
-      file_name: file_name
+      file_name:
     }
   end
   long_format_file_names
 end
 
 def generate_permission(file_status)
-  file_mode = '%06o' % file_status.mode
+  file_mode = format('%06o', file_status.mode)
   permission = ''
   [OWNER_DIGIT, GROUP_DIGIT, OTHER_DIGIT].each do |digit|
     permission += PERMISSIONS[file_mode[digit]]
@@ -81,26 +81,25 @@ def generate_permission(file_status)
 end
 
 def convert_permission(permission, file_status)
-  case
-  when file_status.setuid?
-    permission[SET_USER_ID_DIGIT] = permission[SET_USER_ID_DIGIT] == "x" ? "s" : "S"
-  when file_status.setgid?
-    permission[SET_GROUP_ID_DIGIT] = permission[SET_GROUP_ID_DIGIT] == "x" ? "s" : "S"
-  when file_status.sticky?
-    permission[STICKY_BIT_DIGIT] = permission[STICKY_BIT_DIGIT] == "x" ? "t" : "T"
+  if file_status.setuid?
+    permission[SET_USER_ID_DIGIT] = permission[SET_USER_ID_DIGIT] == 'x' ? 's' : 'S'
+  elsif file_status.setgid?
+    permission[SET_GROUP_ID_DIGIT] = permission[SET_GROUP_ID_DIGIT] == 'x' ? 's' : 'S'
+  elsif file_status.sticky?
+    permission[STICKY_BIT_DIGIT] = permission[STICKY_BIT_DIGIT] == 'x' ? 't' : 'T'
   end
   permission
 end
 
 def generate_timestamp(file_status)
   modify_time = file_status.mtime
-  Time.now.year > modify_time.year ? modify_time.strftime("%_m %_d %_5Y") : modify_time.strftime("%_m %_d %H:%M")
+  Time.now.year > modify_time.year ? modify_time.strftime('%_m %_d %_5Y') : modify_time.strftime('%_m %_d %H:%M')
 end
 
 def create_long_format_widths(long_format_file_names)
   long_format_widths = {}
   %i[hard_link owner_name group_name bytesize timestamp].each do |long_format_key|
-     long_format_widths[long_format_key] = long_format_file_names.map { |long_format_file_name| long_format_file_name[long_format_key]}.max.to_s.length
+    long_format_widths[long_format_key] = long_format_file_names.map { |long_format_file_name| long_format_file_name[long_format_key] }.max.to_s.length
   end
   long_format_widths[:hard_link] += HARD_LINK_FORWARD_WIDTH
   long_format_widths[:bytesize] += BYTESIZE_FORWARD_WIDTH
@@ -111,12 +110,11 @@ def output_long_format(long_format_file_names, total_block_size, long_format_wid
   puts "total: #{total_block_size}"
   long_format_file_names.each do |long_format_file_name|
     long_format_file_name.reject { |key| key == :block_size }.each do |key, value|
-      case
-      when key == :hard_link || key == :bytesize
+      if %i[hard_link bytesize].include?(key)
         print value.to_s.rjust(long_format_widths[key])
-      when key == :owner_name || key == :group_name
+      elsif %i[owner_name group_name].include?(key)
         print value.to_s.ljust(long_format_widths[key]).center(long_format_widths[key] + LONG_FORMAT_SIDE_WIDTH)
-      when key == :timestamp
+      elsif key == :timestamp
         print value.to_s.center(long_format_widths[key] + LONG_FORMAT_SIDE_WIDTH)
       else
         print value
