@@ -53,10 +53,9 @@ def main
 end
 
 def generate_long_format(file_names)
-  long_format_file_names = []
-  file_names.each do |file_name|
+  file_names.map do |file_name|
     file_status = File::Stat.new(file_name)
-    long_format_file_names << {
+    {
       block_size: file_status.blocks,
       file_type: FILE_TYPES[file_status.ftype],
       permission: generate_permission(file_status),
@@ -68,7 +67,6 @@ def generate_long_format(file_names)
       file_name:
     }
   end
-  long_format_file_names
 end
 
 def generate_permission(file_status)
