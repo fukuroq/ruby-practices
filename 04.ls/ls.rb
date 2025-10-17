@@ -42,7 +42,7 @@ def main
   sorted_file_names = options['r'] ? file_names.reverse : file_names
   if options['l']
     long_format_file_names = generate_long_format(sorted_file_names)
-    total_block_size = long_format_file_names.inject(0) { |sum, hash| sum + hash[:block_size] }
+    total_block_size = long_format_file_names.sum { |long_format_file_name| long_format_file_name[:block_size] }
     long_format_widths = create_long_format_widths(long_format_file_names)
     output_long_format(long_format_file_names, total_block_size, long_format_widths)
   else
