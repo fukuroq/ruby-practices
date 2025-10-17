@@ -105,21 +105,18 @@ def create_long_format_widths(long_format_file_names)
 end
 
 def output_long_format(long_format_file_names, total_block_size, long_format_widths)
-  puts "total: #{total_block_size}"
+  puts "total #{total_block_size}"
   long_format_file_names.each do |long_format_file_name|
-    long_format_file_name.reject { |key| key == :block_size }.each do |key, value|
-      if %i[hard_link bytesize].include?(key)
-        print value.to_s.rjust(long_format_widths[key])
-      elsif %i[owner_name group_name].include?(key)
-        print value.to_s.ljust(long_format_widths[key]).center(long_format_widths[key] + LONG_FORMAT_SIDE_WIDTH)
-      elsif key == :timestamp
-        print value.to_s.center(long_format_widths[key] + LONG_FORMAT_SIDE_WIDTH)
-      else
-        print value
-      end
-    end
+    print long_format_file_name[:file_type]
+    print long_format_file_name[:permission]
+    print long_format_file_name[:hard_link].to_s.rjust(long_format_widths[:hard_link])
+    print long_format_file_name[:owner_name].ljust(long_format_widths[:owner_name]).center(long_format_widths[:owner_name] + LONG_FORMAT_SIDE_WIDTH)
+    print long_format_file_name[:group_name].ljust(long_format_widths[:group_name]).center(long_format_widths[:group_name] + LONG_FORMAT_SIDE_WIDTH)
+    print long_format_file_name[:bytesize].to_s.rjust(long_format_widths[:bytesize])
+    print long_format_file_name[:timestamp].to_s.center(long_format_widths[:timestamp] + LONG_FORMAT_SIDE_WIDTH)
+    print long_format_file_name[:file_name]
+    puts
   end
-  puts
 end
 
 def calcurate_column_width(file_names)
