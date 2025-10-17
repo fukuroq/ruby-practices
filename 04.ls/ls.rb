@@ -97,7 +97,7 @@ end
 def create_long_format_widths(long_format_file_names)
   long_format_widths = {}
   %i[hard_link owner_name group_name bytesize timestamp].each do |long_format_key|
-    long_format_widths[long_format_key] = long_format_file_names.map { |long_format_file_name| long_format_file_name[long_format_key] }.max.to_s.length
+    long_format_widths[long_format_key] = long_format_file_names.map { |long_format_file_name| long_format_file_name[long_format_key].to_s.length }.max
   end
   long_format_widths[:hard_link] += HARD_LINK_FORWARD_WIDTH
   long_format_widths[:bytesize] += BYTESIZE_FORWARD_WIDTH
