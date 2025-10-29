@@ -41,10 +41,10 @@ def main
   file_names = Dir.glob('*', options['a'] ? File::FNM_DOTMATCH : 0)
   sorted_file_names = options['r'] ? file_names.reverse : file_names
   if options['l']
-    long_format_file_names = generate_long_format(sorted_file_names)
-    total_block_size = long_format_file_names.sum { |long_format_file_name| long_format_file_name[:block_size] }
-    long_format_widths = create_long_format_widths(long_format_file_names)
-    output_long_format(long_format_file_names, total_block_size, long_format_widths)
+    long_format_files = generate_long_format_files(sorted_file_names)
+    total_block_size = long_format_files.sum { |long_format_file| long_format_file[:block_size] }
+    long_format_widths = generate_long_format_widths(long_format_files)
+    output_long_format_files(long_format_files, total_block_size, long_format_widths)
   else
     number_of_rows = sorted_file_names.length.ceildiv(MAX_NUMBER_OF_COLUMNS)
     column_width = calcurate_column_width(sorted_file_names)
@@ -52,7 +52,7 @@ def main
   end
 end
 
-def generate_long_format(file_names)
+def generate_long_format_files(file_names)
   file_names.map do |file_name|
     file_status = File::Stat.new(file_name)
     {
@@ -94,27 +94,27 @@ def generate_timestamp(file_status)
   Time.now.year > modify_time.year ? modify_time.strftime('%_m %_d %_5Y') : modify_time.strftime('%_m %_d %H:%M')
 end
 
-def create_long_format_widths(long_format_file_names)
-  long_format_widths = {}
-  %i[hard_link owner_name group_name bytesize timestamp].each do |long_format_key|
-    long_format_widths[long_format_key] = long_format_file_names.map { |long_format_file_name| long_format_file_name[long_format_key].to_s.length }.max
+def generate_long_format_widths(files)
+  widths = {}
+  %i[hard_link owner_name group_name bytesize timestamp].each do |key|
+    widths[key] = files.map { |file| file[key].to_s.length }.max
   end
-  long_format_widths[:hard_link] += HARD_LINK_FORWARD_WIDTH
-  long_format_widths[:bytesize] += BYTESIZE_FORWARD_WIDTH
-  long_format_widths
+  widths[:hard_link] += HARD_LINK_FORWARD_WIDTH
+  widths[:bytesize] += BYTESIZE_FORWARD_WIDTH
+  widths
 end
 
-def output_long_format(long_format_file_names, total_block_size, long_format_widths)
+def output_long_format_files(files, total_block_size, widths)
   puts "total #{total_block_size}"
-  long_format_file_names.each do |long_format_file_name|
-    print long_format_file_name[:file_type]
-    print long_format_file_name[:permission]
-    print long_format_file_name[:hard_link].to_s.rjust(long_format_widths[:hard_link])
-    print long_format_file_name[:owner_name].ljust(long_format_widths[:owner_name]).center(long_format_widths[:owner_name] + LONG_FORMAT_SIDE_WIDTH)
-    print long_format_file_name[:group_name].ljust(long_format_widths[:group_name]).center(long_format_widths[:group_name] + LONG_FORMAT_SIDE_WIDTH)
-    print long_format_file_name[:bytesize].to_s.rjust(long_format_widths[:bytesize])
-    print long_format_file_name[:timestamp].to_s.center(long_format_widths[:timestamp] + LONG_FORMAT_SIDE_WIDTH)
-    print long_format_file_name[:file_name]
+  files.each do |file|
+    print file[:file_type]
+    print file[:permission]
+    print file[:hard_link].to_s.rjust(widths[:hard_link])
+    print file[:owner_name].ljust(widths[:owner_name]).center(widths[:owner_name] + LONG_FORMAT_SIDE_WIDTH)
+    print file[:group_name].ljust(widths[:group_name]).center(widths[:group_name] + LONG_FORMAT_SIDE_WIDTH)
+    print file[:bytesize].to_s.rjust(widths[:bytesize])
+    print file[:timestamp].to_s.center(widths[:timestamp] + LONG_FORMAT_SIDE_WIDTH)
+    print file[:file_name]
     puts
   end
 end
