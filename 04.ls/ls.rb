@@ -42,7 +42,7 @@ def main
   sorted_file_names = options['r'] ? file_names.reverse : file_names
   if options['l']
     long_format_files = generate_long_format_files(sorted_file_names)
-    total_block_size = long_format_files.sum { |long_format_file| long_format_file[:block_size] }
+    total_block_size = long_format_files.sum { it[:block_size] }
     long_format_widths = generate_long_format_widths(long_format_files)
     output_long_format_files(long_format_files, total_block_size, long_format_widths)
   else
@@ -97,7 +97,7 @@ end
 def generate_long_format_widths(files)
   widths = {}
   %i[hard_link owner_name group_name bytesize timestamp].each do |key|
-    widths[key] = files.map { |file| file[key].to_s.length }.max
+    widths[key] = files.map { it[key].to_s.length }.max
   end
   widths[:hard_link] += HARD_LINK_FORWARD_WIDTH
   widths[:bytesize] += BYTESIZE_FORWARD_WIDTH
