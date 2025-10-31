@@ -107,16 +107,17 @@ end
 def output_long_format_files(files, total_block_size, widths)
   puts "total #{total_block_size}"
   files.each do |file|
-    file.reject { it == :block_size }.each do |key, value|
-      if %i[hard_link bytesize].include?(key)
-        print value.to_s.rjust(widths[key])
-      elsif %i[owner_name group_name].include?(key)
-        print value.ljust(widths[key]).center(widths[key] + LONG_FORMAT_SIDE_WIDTH)
-      elsif key == :timestamp
-        print value.to_s.center(widths[key] + LONG_FORMAT_SIDE_WIDTH)
-      else
-        print value
-      end
+    file.each do |key, value|
+      next if key == :block_size
+
+      print case key
+            when :hard_link, :bytesize
+              value.to_s.rjust(widths[key])
+            when :owner_name, :group_name, :timestamp
+              value.ljust(widths[key]).center(widths[key] + LONG_FORMAT_SIDE_WIDTH)
+            else
+              value
+            end
     end
     puts
   end
