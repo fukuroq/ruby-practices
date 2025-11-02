@@ -71,10 +71,7 @@ end
 
 def generate_permission(file_status)
   file_mode = format('%06o', file_status.mode)
-  permission = ''
-  [OWNER_DIGIT, GROUP_DIGIT, OTHER_DIGIT].each do |digit|
-    permission += PERMISSIONS[file_mode[digit]]
-  end
+  permission = [OWNER_DIGIT, GROUP_DIGIT, OTHER_DIGIT].map { PERMISSIONS[file_mode[it]] }.join
   convert_permission(permission, file_status)
 end
 
