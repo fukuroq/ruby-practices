@@ -92,9 +92,8 @@ def generate_timestamp(file_status)
 end
 
 def generate_long_format_widths(files)
-  widths = {}
-  %i[hard_link owner_name group_name bytesize timestamp].each do |key|
-    widths[key] = files.map { it[key].to_s.length }.max
+  widths = %i[hard_link owner_name group_name bytesize timestamp].each_with_object({}) do |key, hash|
+    hash[key] = files.map { it[key].to_s.length }.max
   end
   widths[:hard_link] += HARD_LINK_FORWARD_WIDTH
   widths[:bytesize] += BYTESIZE_FORWARD_WIDTH
