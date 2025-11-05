@@ -41,10 +41,10 @@ def main
   file_names = Dir.glob('*', options['a'] ? File::FNM_DOTMATCH : 0)
   sorted_file_names = options['r'] ? file_names.reverse : file_names
   if options['l']
+    total_block_size = sorted_file_names.sum { File::Stat.new(it).blocks }
     long_format_files = generate_long_format_files(sorted_file_names)
-    total_block_size = long_format_files.sum { it[:block_size] }
     long_format_widths = generate_long_format_widths(long_format_files)
-    output_long_format_files(long_format_files, total_block_size, long_format_widths)
+    output_long_format_files(total_block_size, long_format_files, long_format_widths)
   else
     number_of_rows = sorted_file_names.length.ceildiv(MAX_NUMBER_OF_COLUMNS)
     column_width = calcurate_column_width(sorted_file_names)
@@ -56,7 +56,6 @@ def generate_long_format_files(file_names)
   file_names.map do |file_name|
     file_status = File::Stat.new(file_name)
     {
-      block_size: file_status.blocks,
       file_type: FILE_TYPES[file_status.ftype],
       permission: generate_permission(file_status),
       hard_link: file_status.nlink,
@@ -100,12 +99,10 @@ def generate_long_format_widths(files)
   widths
 end
 
-def output_long_format_files(files, total_block_size, widths)
+def output_long_format_files(total_block_size, files, widths)
   puts "total #{total_block_size}"
   files.each do |file|
     file.each do |key, value|
-      next if key == :block_size
-
       print case key
             when :hard_link, :bytesize
               value.to_s.rjust(widths[key])
