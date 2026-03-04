@@ -7,39 +7,39 @@ TAB_WIDTH = 8 # ターミナルのデフォルトのタブの文字数
 def main
   options = ARGV.getopts('lwc')
 
-  if 2 > ARGV.size
+  if ARGV.size <= 1
     file_name = ARGV[0]
     input_text = ARGV.empty? ? $stdin.read : File.read(file_name)
-    outputSingleLine(file_name, input_text, options)
+    output_single_line(file_name, input_text, options)
   else
     file_names = ARGV
-    outputMultiLine(file_names, options)
+    output_multi_line(file_names, options)
   end
 end
 
-def outputSingleLine(file_name, text, options)
+def output_single_line(file_name, text, options)
   # オプションがついていない場合
   if options.values.none?
-    print format("% #{TAB_WIDTH}d", countLines(text)) +
-      format("% #{TAB_WIDTH}d", countWords(text)) +
-      format("% #{TAB_WIDTH}d", countBytes(text))
+    print format("% #{TAB_WIDTH}d", count_lines(text)) +
+      format("% #{TAB_WIDTH}d", count_words(text)) +
+      format("% #{TAB_WIDTH}d", count_bytes(text))
     puts ' ' + file_name if file_name
   end
 
   # オプションがついている場合
-  print format("% #{TAB_WIDTH}d", countLines(text)) if options['l']
-  print format("% #{TAB_WIDTH}d", countWords(text)) if options['w']
-  print format("% #{TAB_WIDTH}d", countBytes(text)) if options['c']
+  print format("% #{TAB_WIDTH}d", count_lines(text)) if options['l']
+  print format("% #{TAB_WIDTH}d", count_words(text)) if options['w']
+  print format("% #{TAB_WIDTH}d", count_bytes(text)) if options['c']
   puts ' ' + file_name if !options.values.none? && file_name
 end
 
-def outputMultiLine(file_names, options)
+def output_multi_line(file_names, options)
   total_line_count, total_word_count, total_byte_count = 0, 0, 0
   file_names.each do |file_name|
     text = File.read(file_name)
-    line_count = countLines(text)
-    word_count = countWords(text)
-    byte_count = countBytes(text)
+    line_count = count_lines(text)
+    word_count = count_words(text)
+    byte_count = count_bytes(text)
 
     # オプションがついていない場合
     puts format("% #{TAB_WIDTH}d", line_count) +
@@ -71,15 +71,15 @@ def outputMultiLine(file_names, options)
   puts ' ' + 'total' if !options.values.none?
 end
 
-def countLines(text)
+def count_lines(text)
   text.count("\n")
 end
 
-def countWords(text)
+def count_words(text)
   text.split.count
 end
 
-def countBytes(text)
+def count_bytes(text)
   text.bytesize
 end
 
