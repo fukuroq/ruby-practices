@@ -8,15 +8,7 @@ def main
   options = ARGV.getopts('lwc')
   show_all = options.values.none?
   file_names = ARGV
-  file_statistics = file_names.map do |file_name|
-    file_text = File.read(file_name)
-    {
-      line_count: file_text.count("\n"),
-      word_count: file_text.split.count,
-      byte_count: file_text.bytesize,
-      file_name: file_name
-    }
-  end
+  file_statistics = build_file_statistics(file_names)
   file_statistics.each do |file_statistic|
     result = []
     result << format("% #{TAB_WIDTH}d", file_statistic[:line_count]) if show_all || options['l']
@@ -33,6 +25,18 @@ def main
     result << format("% #{TAB_WIDTH}d", file_statistics.sum { it[:byte_count] }) if show_all || options['c']
     result << " total"
     puts result.join
+  end
+end
+
+def build_file_statistics(file_names)
+  file_names.map do |file_name|
+    file_text = File.read(file_name)
+    {
+      line_count: file_text.count("\n"),
+      word_count: file_text.split.count,
+      byte_count: file_text.bytesize,
+      file_name: file_name
+    }
   end
 end
 
