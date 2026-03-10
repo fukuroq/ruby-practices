@@ -9,8 +9,8 @@ def main
   file_names = ARGV
   file_statistics = build_file_statistics(file_names)
   file_statistics << build_file_statistics_total(file_statistics) if file_statistics.size > 1
-  formated_rows = format_rows(file_statistics, options)
-  puts formated_rows.join("\n")
+  formatted_rows = format_rows(file_statistics, options)
+  puts formatted_rows.join("\n")
 end
 
 def build_file_statistics(file_names)
