@@ -9,8 +9,7 @@ def main
   file_names = ARGV
   file_statistics = build_file_statistics(file_names)
   file_statistics << build_file_statistics_total(file_statistics) if file_statistics.size > 1
-  formatted_rows = format_rows(file_statistics, options)
-  puts formatted_rows.join("\n")
+  puts format_rows(file_statistics, options)
 end
 
 def build_file_statistics(file_names)
@@ -43,7 +42,7 @@ def format_rows(file_statistics, options)
     result << format("% #{TAB_WIDTH}d", file_statistic[:byte_count]) if show_all || options['c']
     result << " #{file_statistic[:file_name]}"
     result.join
-  end
+  end.join("\n")
 end
 
 main
