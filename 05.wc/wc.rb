@@ -9,8 +9,7 @@ def main
   file_names = ARGV
   file_statistics = build_file_statistics(file_names)
   file_statistics << build_file_statistics_total(file_statistics) if file_statistics.size > 1
-  show_all = options.values.none?
-  puts file_statistics.map { format_row(it, options, show_all) }.join("\n")
+  output_file_statistics(file_statistics, options)
 end
 
 def build_file_statistics(file_names)
@@ -34,13 +33,23 @@ def build_file_statistics_total(file_statistics)
   }
 end
 
-def format_row(file_statistic, options, show_all)
-  result = []
-  result << format("% #{TAB_WIDTH}d", file_statistic[:line_count]) if show_all || options['l']
-  result << format("% #{TAB_WIDTH}d", file_statistic[:word_count]) if show_all || options['w']
-  result << format("% #{TAB_WIDTH}d", file_statistic[:byte_count]) if show_all || options['c']
-  result << " #{file_statistic[:file_name]}"
-  result.join
+def output_file_statistics(file_statistics, options)
+  columns = collect_display_columns(options)
+  puts file_statistics.map { format_row(it, columns) }.join("\n")
+end
+
+def collect_display_columns(options)
+  show_all = options.values.none?
+  columns = []
+  columns << :line_count if show_all || options['l']
+  columns << :word_count if show_all || options['w']
+  columns << :byte_count if show_all || options['c']
+  columns
+end
+
+def format_row(file_statistic, columns)
+  formatted_counts = columns.map { format("% #{TAB_WIDTH}d", file_statistic[it]) }.join
+  "#{formatted_counts} #{file_statistic[:file_name]}"
 end
 
 main
