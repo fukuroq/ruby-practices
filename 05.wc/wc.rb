@@ -9,7 +9,8 @@ def main
   file_names = ARGV
   file_statistics = build_file_statistics(file_names)
   file_statistics << build_file_statistics_total(file_statistics) if file_statistics.size > 1
-  output_file_statistics(file_statistics, options)
+  columns = collect_display_columns(options)
+  output_file_statistics(file_statistics, columns)
 end
 
 def build_file_statistics(file_names)
@@ -33,11 +34,6 @@ def build_file_statistics_total(file_statistics)
   }
 end
 
-def output_file_statistics(file_statistics, options)
-  columns = collect_display_columns(options)
-  puts file_statistics.map { format_row(it, columns) }.join("\n")
-end
-
 def collect_display_columns(options)
   show_all = options.values.none?
   columns = []
@@ -45,6 +41,10 @@ def collect_display_columns(options)
   columns << :word_count if show_all || options['w']
   columns << :byte_count if show_all || options['c']
   columns
+end
+
+def output_file_statistics(file_statistics, columns)
+  puts file_statistics.map { format_row(it, columns) }.join("\n")
 end
 
 def format_row(file_statistic, columns)
