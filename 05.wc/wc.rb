@@ -13,7 +13,7 @@ def main
     text_statistics = file_names.map { build_text_statistic(File.read(it), it) }
   end
   text_statistics << build_text_statistics_total(text_statistics) if text_statistics.size > 1
-  columns = collect_display_columns(options)
+  columns = collect_show_count_columns(options)
   output_text_statistics(text_statistics, columns)
 end
 
@@ -35,7 +35,7 @@ def build_text_statistics_total(text_statistics)
   }
 end
 
-def collect_display_columns(options)
+def collect_show_count_columns(options)
   show_all = options.values.none?
   columns = []
   columns << :line_count if show_all || options['l']
