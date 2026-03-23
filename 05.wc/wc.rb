@@ -15,7 +15,7 @@ def main
     end
   text_statistics << build_text_statistics_total(text_statistics) if text_statistics.size > 1
   columns = collect_show_count_columns(options)
-  puts text_statistics.map { format_row(it, columns) }
+  puts format_rows(text_statistics, columns)
 end
 
 def build_text_statistic(text, file_name = '')
@@ -45,10 +45,12 @@ def collect_show_count_columns(options)
   columns
 end
 
-def format_row(text_statistic, columns)
-  counts_part = columns.map { format("% #{TAB_WIDTH}d", text_statistic[it]) }.join
-  file_name_part = text_statistic[:file_name].empty? ? '' : " #{text_statistic[:file_name]}"
-  "#{counts_part}#{file_name_part}"
+def format_rows(text_statistics, columns)
+  text_statistics.map do |text_statistic|
+    counts_part = columns.map { format("% #{TAB_WIDTH}d", text_statistic[it]) }.join
+    file_name_part = text_statistic[:file_name].empty? ? '' : " #{text_statistic[:file_name]}"
+    "#{counts_part}#{file_name_part}"
+  end
 end
 
 main
