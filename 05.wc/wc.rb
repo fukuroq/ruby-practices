@@ -8,16 +8,16 @@ def main
   options = ARGV.getopts('lwc')
   file_names = ARGV
   if file_names.empty?
-    file_statistics = [build_file_statistic($stdin.read)]
+    text_statistics = [build_text_statistic($stdin.read)]
   else
-    file_statistics = file_names.map { build_file_statistic(File.read(it), it) }
+    text_statistics = file_names.map { build_text_statistic(File.read(it), it) }
   end
-  file_statistics << build_file_statistics_total(file_statistics) if file_statistics.size > 1
+  text_statistics << build_text_statistics_total(text_statistics) if text_statistics.size > 1
   columns = collect_display_columns(options)
-  output_file_statistics(file_statistics, columns)
+  output_text_statistics(text_statistics, columns)
 end
 
-def build_file_statistic(text, file_name = '')
+def build_text_statistic(text, file_name = '')
   {
     line_count: text.count("\n"),
     word_count: text.split.count,
@@ -26,11 +26,11 @@ def build_file_statistic(text, file_name = '')
   }
 end
 
-def build_file_statistics_total(file_statistics)
+def build_text_statistics_total(text_statistics)
   {
-    line_count: file_statistics.sum { it[:line_count] },
-    word_count: file_statistics.sum { it[:word_count] },
-    byte_count: file_statistics.sum { it[:byte_count] },
+    line_count: text_statistics.sum { it[:line_count] },
+    word_count: text_statistics.sum { it[:word_count] },
+    byte_count: text_statistics.sum { it[:byte_count] },
     file_name: 'total'
   }
 end
@@ -44,13 +44,13 @@ def collect_display_columns(options)
   columns
 end
 
-def output_file_statistics(file_statistics, columns)
-  puts file_statistics.map { format_row(it, columns) }.join("\n")
+def output_text_statistics(text_statistics, columns)
+  puts text_statistics.map { format_row(it, columns) }.join("\n")
 end
 
-def format_row(file_statistic, columns)
-  formatted_counts = columns.map { format("% #{TAB_WIDTH}d", file_statistic[it]) }.join
-  "#{formatted_counts} #{file_statistic[:file_name]}"
+def format_row(text_statistic, columns)
+  formatted_counts = columns.map { format("% #{TAB_WIDTH}d", text_statistic[it]) }.join
+  "#{formatted_counts} #{text_statistic[:file_name]}"
 end
 
 main
