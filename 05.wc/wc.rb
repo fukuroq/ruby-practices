@@ -7,11 +7,12 @@ TAB_WIDTH = 8 # ターミナルのデフォルトのタブの文字数
 def main
   options = ARGV.getopts('lwc')
   file_names = ARGV
-  if file_names.empty?
-    text_statistics = [build_text_statistic($stdin.read)]
-  else
-    text_statistics = file_names.map { build_text_statistic(File.read(it), it) }
-  end
+  text_statistics =
+    if file_names.empty?
+      [build_text_statistic($stdin.read)]
+    else
+      file_names.map { build_text_statistic(File.read(it), it) }
+    end
   text_statistics << build_text_statistics_total(text_statistics) if text_statistics.size > 1
   columns = collect_show_count_columns(options)
   output_text_statistics(text_statistics, columns)
