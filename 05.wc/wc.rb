@@ -15,7 +15,7 @@ def main
     end
   text_statistics << build_text_statistics_total(text_statistics) if text_statistics.size > 1
   columns = collect_show_count_columns(options)
-  output_text_statistics(text_statistics, columns)
+  puts text_statistics.map { format_row(it, columns) }
 end
 
 def build_text_statistic(text, file_name = '')
@@ -43,10 +43,6 @@ def collect_show_count_columns(options)
   columns << :word_count if show_all || options['w']
   columns << :byte_count if show_all || options['c']
   columns
-end
-
-def output_text_statistics(text_statistics, columns)
-  puts text_statistics.map { format_row(it, columns) }.join("\n")
 end
 
 def format_row(text_statistic, columns)
