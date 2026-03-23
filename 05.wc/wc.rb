@@ -49,8 +49,9 @@ def output_text_statistics(text_statistics, columns)
 end
 
 def format_row(text_statistic, columns)
-  formatted_counts = columns.map { format("% #{TAB_WIDTH}d", text_statistic[it]) }.join
-  "#{formatted_counts} #{text_statistic[:file_name]}"
+  counts_part = columns.map { format("% #{TAB_WIDTH}d", text_statistic[it]) }.join
+  file_name_part = text_statistic[:file_name].empty? ? '' : " #{text_statistic[:file_name]}"
+  "#{counts_part}#{file_name_part}"
 end
 
 main
