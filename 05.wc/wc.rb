@@ -13,8 +13,10 @@ def main
     else
       file_names.map { build_text_stat(File.read(it), options, it) }
     end
-  text_stats << build_total_text_stats(text_stats) if text_stats.size > 1
-  puts format_rows(text_stats)
+  text_stats.each do |text_stat|
+    puts format_row(text_stat[:counts], text_stat[:file_name])
+  end
+  puts format_row(build_total_counts(text_stats), 'total') if text_stats.size > 1
 end
 
 def build_text_stat(text, options, file_name = '')
@@ -29,21 +31,16 @@ def build_text_stat(text, options, file_name = '')
   }
 end
 
-def build_total_text_stats(text_stats)
+def build_total_counts(text_stats)
   total_counts = Hash.new(0)
   text_stats.each { it[:counts].each { |key, value| total_counts[key] += value } }
-  {
-    counts: total_counts,
-    file_name: 'total'
-  }
+  total_counts
 end
 
-def format_rows(text_stats)
-  text_stats.map do |text_stat|
-    counts_part = text_stat[:counts].map { |_key, value| format("% #{TAB_WIDTH}d", value) }.join
-    file_name_part = text_stat[:file_name].empty? ? '' : " #{text_stat[:file_name]}"
-    "#{counts_part}#{file_name_part}"
-  end
+def format_row(counts, file_name)
+  counts_part = counts.map { |_key, value| format("% #{TAB_WIDTH}d", value) }.join
+  file_name_part = file_name.empty? ? '' : " #{file_name}"
+  "#{counts_part}#{file_name_part}"
 end
 
 main
