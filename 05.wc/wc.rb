@@ -13,7 +13,7 @@ def main
     else
       file_names.map { build_text_stat(File.read(it), options, it) }
     end
-  text_stats << build_text_stats_total(text_stats) if text_stats.size > 1
+  text_stats << build_total_text_stats(text_stats) if text_stats.size > 1
   puts format_rows(text_stats)
 end
 
@@ -29,7 +29,7 @@ def build_text_stat(text, options, file_name = '')
   }
 end
 
-def build_text_stats_total(text_stats)
+def build_total_text_stats(text_stats)
   total_counts = Hash.new(0)
   text_stats.each { it[:counts].each { |key, value| total_counts[key] += value } }
   {
