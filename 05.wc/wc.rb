@@ -5,7 +5,7 @@ require 'optparse'
 TAB_WIDTH = 8 # ターミナルのデフォルトのタブの文字数
 
 def main
-  options = ARGV.getopts('lwc')
+  options = ARGV.getopts('lwc', symbolize_names: true)
   file_names = ARGV
   text_stats =
     if file_names.empty?
@@ -39,9 +39,9 @@ end
 def collect_show_count_columns(options)
   show_all = options.values.none?
   columns = []
-  columns << :line_count if show_all || options['l']
-  columns << :word_count if show_all || options['w']
-  columns << :byte_count if show_all || options['c']
+  columns << :line_count if show_all || options[:l]
+  columns << :word_count if show_all || options[:w]
+  columns << :byte_count if show_all || options[:c]
   columns
 end
 
