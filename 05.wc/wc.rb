@@ -2,7 +2,7 @@
 
 require 'optparse'
 
-TAB_WIDTH = 8 # ターミナルのデフォルトのタブの文字数
+COUNT_WIDTH = 8 # 各カウントの出力幅
 
 def main
   options = ARGV.getopts('lwc', symbolize_names: true)
@@ -31,7 +31,7 @@ def output(text_stats, show_total)
 end
 
 def format_row(counts, file_name)
-  counts_part = counts.map { |_key, value| format("%#{TAB_WIDTH}d", value) }.join
+  counts_part = counts.map { |_key, value| format("%#{COUNT_WIDTH}d", value) }.join
   file_name_part = file_name.empty? ? '' : " #{file_name}"
   "#{counts_part}#{file_name_part}"
 end
