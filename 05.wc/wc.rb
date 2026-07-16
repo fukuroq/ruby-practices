@@ -31,7 +31,7 @@ def output(text_stats, show_total)
 end
 
 def format_row(counts, file_name)
-  counts_part = counts.map { |_key, value| format("% #{TAB_WIDTH}d", value) }.join
+  counts_part = counts.map { |_key, value| format("%#{TAB_WIDTH}d", value) }.join
   file_name_part = file_name.empty? ? '' : " #{file_name}"
   "#{counts_part}#{file_name_part}"
 end
