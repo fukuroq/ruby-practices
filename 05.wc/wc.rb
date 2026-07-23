@@ -13,7 +13,7 @@ def main
     else
       file_names.map { build_text_stat(File.read(it), options, it) }
     end
-  output(text_stats, text_stats.size > 1)
+  output(text_stats)
 end
 
 def build_text_stat(text, options, file_name = '')
@@ -25,7 +25,8 @@ def build_text_stat(text, options, file_name = '')
   { counts: counts, file_name: file_name }
 end
 
-def output(text_stats, show_total)
+def output(text_stats)
+  show_total = text_stats.size > 1
   text_stats.each { puts format_row(it[:counts], it[:file_name]) }
   puts format_row(build_total_counts(text_stats), 'total') if show_total
 end
