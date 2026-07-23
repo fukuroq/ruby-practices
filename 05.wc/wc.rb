@@ -38,9 +38,8 @@ def format_row(counts, file_name)
 end
 
 def build_total_counts(text_stats)
-  total_counts = Hash.new(0)
-  text_stats.each { it[:counts].each { |key, value| total_counts[key] += value } }
-  total_counts
+  keys = text_stats.first[:counts].keys
+  keys.to_h { |key| [key, text_stats.sum { |text_stat| text_stat[:counts][key] }] }
 end
 
 main
