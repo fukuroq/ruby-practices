@@ -5,7 +5,7 @@ require 'optparse'
 COUNT_WIDTH = 8 # 各カウントの出力幅
 
 def main
-  options = ARGV.getopts('lwc', symbolize_names: true)
+  options = normalize_options(ARGV.getopts('lwc', symbolize_names: true))
   file_names = ARGV
   text_stats =
     if file_names.empty?
@@ -16,12 +16,15 @@ def main
   output(text_stats)
 end
 
+def normalize_options(options)
+  options.values.none? ? options.transform_values { true } : options
+end
+
 def build_text_stat(text, options, file_name = '')
-  show_all = options.values.none?
   counts = {}
-  counts[:line_count] = text.count("\n") if show_all || options[:l]
-  counts[:word_count] = text.split.count if show_all || options[:w]
-  counts[:byte_count] = text.bytesize if show_all || options[:c]
+  counts[:line_count] = text.count("\n") if options[:l]
+  counts[:word_count] = text.split.count if options[:w]
+  counts[:byte_count] = text.bytesize if options[:c]
   { counts: counts, file_name: file_name }
 end
 
